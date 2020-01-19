@@ -51,11 +51,11 @@ def poll():
                     # log to console
                     print(
                         f"Generated {meme_type} meme for status id {ntf['status']['id']}")
+                    # remove meme image
+                    remove('output/' + path)
 
                 # set read
                 id_file.writelines(str(ntf['status']['id']) + '\n')
-                # remove meme image
-                remove('output/' + path)
 
     id_file.close()
 
