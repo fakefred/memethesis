@@ -17,6 +17,10 @@ def is_recent(time: datetime) -> bool:
         return True
     return False
 
+def determine_visibility(vis: str) -> str:
+    # only direct if incoming status is direct; else unlisted
+    return 'direct' if vis == 'direct' else 'unlisted'
+
 
 def poll():
     notifs = masto.notifications()
@@ -40,12 +44,12 @@ def poll():
                 masto.status_reply(
                     ntf['status'],
                     f'Here\'s your {meme_type} meme',
-                    visibility='unlisted',
-                    # visibility='direct',
+                    visibility=determine_visibility(ntf['status']['visibility']),
                     media_ids=media_id
                 )
                 # log to console
-                print(f"Generated {meme_type} meme for status id {ntf['status']['id']}")
+                print(
+                    f"Generated {meme_type} meme for status id {ntf['status']['id']}")
                 # set read
                 id_file.writelines(str(ntf['status']['id']) + '\n')
                 # remove meme image
