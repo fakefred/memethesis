@@ -4,3 +4,4 @@ output/*
 *.secret
 config.py
 test.txt
+logs/responded.log

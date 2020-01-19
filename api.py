@@ -4,14 +4,6 @@ from datetime import datetime, timedelta, timezone
 from os import remove
 from config import *
 
-""" Run this once to initiate secret key file
-Mastodon.create_app(
-    'drakebot',  # for historical reasons
-    api_base_url='https://mastodon.technology',
-    to_file='drakebot.secret'
-)
-"""
-
 masto = Mastodon(
     api_base_url=API_BASE_URL,
     client_id=CLIENT_ID,
@@ -43,8 +35,8 @@ def poll():
                 meme_type = memethesis(ntf['status']['content'], saveto=path)
                 # upload meme
                 media_id = masto.media_post(
-                   'output/' + path, mime_type='image/jpeg')['id']
-                # publish toot                
+                    'output/' + path, mime_type='image/jpeg')['id']
+                # publish toot
                 masto.status_reply(
                     ntf['status'],
                     f'Here\'s your {meme_type} meme',
@@ -52,6 +44,8 @@ def poll():
                     # visibility='direct',
                     media_ids=media_id
                 )
+                # log to console
+                print(f"Generated {meme_type} meme for status id {ntf['status']['id']}")
                 # set read
                 id_file.writelines(str(ntf['status']['id']) + '\n')
                 # remove meme image
