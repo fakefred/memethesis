@@ -35,21 +35,23 @@ def poll():
             # the notif is recent and unread by drakebot
             if is_recent(ntf['status']['created_at']) and ntf['status']['id'] not in id_list:
                 path = str(ntf['status']['id']) + '.jpg'
-                # generate meme
+                # attempt to generate meme
                 meme_type = memethesis(ntf['status']['content'], saveto=path)
-                # upload meme
-                media_id = masto.media_post(
-                    'output/' + path, mime_type='image/jpeg')['id']
-                # publish toot
-                masto.status_reply(
-                    ntf['status'],
-                    f'Here\'s your {meme_type} meme',
-                    visibility=determine_visibility(ntf['status']['visibility']),
-                    media_ids=media_id
-                )
-                # log to console
-                print(
-                    f"Generated {meme_type} meme for status id {ntf['status']['id']}")
+                if not meme_type == 'not a meme':
+                    # upload meme
+                    media_id = masto.media_post(
+                        'output/' + path, mime_type='image/jpeg')['id']
+                    # publish toot
+                    masto.status_reply(
+                        ntf['status'],
+                        f'Here\'s your {meme_type} meme',
+                        visibility=determine_visibility(ntf['status']['visibility']),
+                        media_ids=media_id
+                    )
+                    # log to console
+                    print(
+                        f"Generated {meme_type} meme for status id {ntf['status']['id']}")
+
                 # set read
                 id_file.writelines(str(ntf['status']['id']) + '\n')
                 # remove meme image

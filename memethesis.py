@@ -80,6 +80,8 @@ def memethesis(toot: str, saveto=''):
         make_drake(**parsed_drake)
         return 'Drake'  # return meme type
 
+    return 'not a meme'
+
 
 if __name__ == '__main__':
     memethesis(TOOT)
