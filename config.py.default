@@ -1,8 +1,8 @@
 # RENAME THIS FILE TO `config.py` BEFORE USING
 # Auth
-API_BASE_URL = '',
-CLIENT_ID = '',
-CLIENT_SECRET = '',
+API_BASE_URL = ''
+CLIENT_ID = ''
+CLIENT_SECRET = ''
 ACCESS_TOKEN = ''
 
 # Notifications
