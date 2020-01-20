@@ -8,6 +8,8 @@ TRANSPARENT = (255, 255, 255, 0)
 TEXTSPACE = (400, 250)
 
 # TODO: automate memetheses, with only template image and text spaces provided in csv
+
+
 def make_drake(dislike='', like='', saveto='drake_output.jpg'):
     template = Image.open('./res/template/drake.jpg')
     IMSIZE = template.size
