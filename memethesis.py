@@ -1,11 +1,13 @@
 from re import sub
 from drake import make_drake
 
-# use any of the test toots here
-# TOOT = '<p>drake + <br />:drake_dislike: dislike<br />:drake_like: desliek<br /><a href="https://mastodon.technology/tags/tag" class="mention hashtag" rel="tag">#<span>tag</span></a></p>'
-# TOOT = ':drake_dislike: Cable News Network <br /> :drake_like: Convolutionary Neural Network'
-# TOOT = '<p><span class="h-card"><a href="https://botsin.space/@memethesis" class="u-url mention" rel="nofollow noopener" target="_blank">@<span>memethesis</span></a></span>:drake_dislike: Run bot on proper server<br>:drake_like: Run bot on VS Code</p>'
-TOOT = '<p><span class="h-card"><a href="https://botsin.space/@memethesis" class="u-url mention">@<span>memethesis</span></a></span> :drake_dislike: Having enough prudence not to have the bot run unattended in its alpha phase</p><p>:drake_like: Running the bot overnight in gnu screen while I go to sleep</p>'
+# Test toots
+TOOTS = ['<p>stole some emotes from .social while they werent lookin</p><p>:birdsite: :angery: :breathe: :gnomed: :dab: :thaenkin: :thinkhappy: :tinking:</p>',
+         '<p>drake + <br />:drake_dislike: dislike<br />:drake_like: desliek<br /><a href="https://mastodon.technology/tags/tag" class="mention hashtag" rel="tag">#<span>tag</span></a></p>',
+         ':drake_dislike: Cable News Network <br /> :drake_like: Convolutionary Neural Network',
+         '<p><span class="h-card"><a href="https://botsin.space/@memethesis" class="u-url mention" rel="nofollow noopener" target="_blank">@<span>memethesis</span></a></span>:drake_dislike: Run bot on proper server<br>:drake_like: Run bot on VS Code</p>',
+         '<p><span class="h-card"><a href="https://botsin.space/@memethesis" class="u-url mention">@<span>memethesis</span></a></span> :drake_dislike: Having enough prudence not to have the bot run unattended in its alpha phase</p><p>:drake_like: Running the bot overnight in gnu screen while I go to sleep</p>']
+
 
 def uncurse(toot: str):
     # toots come in a cursed format (HTML)
@@ -68,12 +70,13 @@ def memethesis(toot: str, saveto=''):
             ).strip()
         elif line.strip().startswith(':drake_like:') and drakeness == 1:
             drakeness += 1
-            parsed_drake['like'] = line.replace(':drake_like:', '').strip()
+            # remove leading :drake_like:, but not the others
+            parsed_drake['like'] = line.replace(':drake_like:', '', 1).strip()
         elif drakeness == 1:
-            # in dislike
+            # append line to dislike
             parsed_drake['dislike'] += '\n' + line.strip()
         elif drakeness == 2:
-            # in like
+            # append line to like
             parsed_drake['like'] += '\n' + line.strip()
 
     if drakeness == 2:
@@ -85,4 +88,8 @@ def memethesis(toot: str, saveto=''):
 
 
 if __name__ == '__main__':
-    print(memethesis(TOOT))
+    for toot in TOOTS:
+        # anticipated console output:
+        # not a meme
+        # Drake (x4)
+        print(memethesis(toot))
