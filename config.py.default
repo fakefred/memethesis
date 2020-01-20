@@ -4,6 +4,3 @@ API_BASE_URL = ''
 CLIENT_ID = ''
 CLIENT_SECRET = ''
 ACCESS_TOKEN = ''
-
-# Notifications
-RECENT_THRESHOLD = 5  # minutes
