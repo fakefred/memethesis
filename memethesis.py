@@ -6,7 +6,8 @@ TOOTS = ['<p>stole some emotes from .social while they werent lookin</p><p>:bird
          '<p>drake + <br />:drake_dislike: dislike<br />:drake_like: desliek<br /><a href="https://mastodon.technology/tags/tag" class="mention hashtag" rel="tag">#<span>tag</span></a></p>',
          ':drake_dislike: Cable News Network <br /> :drake_like: Convolutionary Neural Network',
          '<p><span class="h-card"><a href="https://botsin.space/@memethesis" class="u-url mention" rel="nofollow noopener" target="_blank">@<span>memethesis</span></a></span>:drake_dislike: Run bot on proper server<br>:drake_like: Run bot on VS Code</p>',
-         '<p><span class="h-card"><a href="https://botsin.space/@memethesis" class="u-url mention">@<span>memethesis</span></a></span> :drake_dislike: Having enough prudence not to have the bot run unattended in its alpha phase</p><p>:drake_like: Running the bot overnight in gnu screen while I go to sleep</p>']
+         '<p><span class="h-card"><a href="https://botsin.space/@memethesis" class="u-url mention">@<span>memethesis</span></a></span> :drake_dislike: Having enough prudence not to have the bot run unattended in its alpha phase</p><p>:drake_like: Running the bot overnight in gnu screen while I go to sleep</p>',
+         '<p><span class=\"h-card\"><a href=\"https://botsin.space/@memethesis\" class=\"u-url mention\">@<span>memethesis</span></a></span> :drake_dislike: Memes without emojo<br />:drake_like: :hacker_m: :hacker_e: :hacker_m: :hacker_e: :hacker_s: with such cat emojo :cate: :catto:</p>']
 
 
 def uncurse(toot: str):
@@ -29,7 +30,7 @@ def uncurse(toot: str):
     return blessed
 
 
-def memethesis(toot: str, saveto=''):
+def memethesis(toot: str, emojis={}, instance='', saveto=''):
     blessed = uncurse(toot)
     lines = blessed.splitlines()
 
@@ -43,11 +44,13 @@ def memethesis(toot: str, saveto=''):
     :drake_like: [arbitrary content]
     [arbitrary content, concatenated to end of like with a line break]
     """
-
+    # TODO: def is_drake()
     drakeness = 0
     parsed_drake = {
         'dislike': '',
         'like': '',
+        'emojis': emojis,
+        'instance': instance,
         'saveto': saveto if saveto else 'drake.jpg'
     }
 
@@ -68,6 +71,7 @@ def memethesis(toot: str, saveto=''):
             parsed_drake['dislike'] = ':drake_dislike:'.join(
                 line.split(':drake_dislike:')[1:]
             ).strip()
+            # TODO: limit line split to once
         elif line.strip().startswith(':drake_like:') and drakeness == 1:
             drakeness += 1
             # remove leading :drake_like:, but not the others
@@ -88,8 +92,15 @@ def memethesis(toot: str, saveto=''):
 
 
 if __name__ == '__main__':
-    for toot in TOOTS:
+    # for toot in TOOTS:
         # anticipated console output:
         # not a meme
         # Drake (x4)
-        print(memethesis(toot))
+        # print(memethesis(toot))
+    memethesis(TOOTS[-1], emojis={
+        "hacker_m": "https://cdn.mastodon.technology/custom_emojis/images/000/019/658/static/8247c749af3ca0ba.png",
+        "hacker_e": "https://cdn.mastodon.technology/custom_emojis/images/000/019/651/static/2fb1e9ec6c35a4e7.png",
+        "hacker_s": "https://cdn.mastodon.technology/custom_emojis/images/000/019/663/static/5f3731281ddc22f9.png",
+        "cate": "https://cdn.mastodon.technology/custom_emojis/images/000/074/675/static/71593e05a95bd8a7.png",
+        "catto": "https://cdn.mastodon.technology/custom_emojis/images/000/082/698/static/0ed6bafb0cbb3008.png"
+    }, instance='https://mastodon.technology/@fakefred/103526793891861663')

@@ -1,8 +1,10 @@
 import mastodon
 from mastodon import Mastodon, StreamListener
 from memethesis import memethesis
+from emojiops import construct_emoji_dict
 from os import remove
 from config import *
+
 
 masto = Mastodon(
     api_base_url=API_BASE_URL,
@@ -24,11 +26,17 @@ class Listener(StreamListener):
             # attempt to generate meme
             path = str(ntf['status']['id']) + '.jpg'
             meme_type = memethesis(
-                ntf['status']['content'], saveto=path)
+                ntf['status']['content'],
+                emojis=construct_emoji_dict(ntf['status']['emojis']),
+                instance=ntf['status']['url'],  # emojiops.py will handle this
+                saveto=path
+            )
+
             if not meme_type == 'not a meme':
                 # upload meme
                 media_id = masto.media_post(
                     'output/' + path, mime_type='image/jpeg')['id']
+
                 # publish toot
                 masto.status_reply(
                     ntf['status'],
@@ -37,9 +45,11 @@ class Listener(StreamListener):
                         ntf['status']['visibility']),
                     media_ids=media_id
                 )
+
                 # log to console
                 print(
                     f"Generated {meme_type} meme for status id {ntf['status']['id']}")
+
                 # remove meme image
                 remove('output/' + path)
 
