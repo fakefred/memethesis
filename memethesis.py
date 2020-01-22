@@ -26,7 +26,15 @@ def uncurse(toot: str):
         else:
             if not in_square_bracket:
                 blessed += char
-    # TODO: parse &...;
+    
+    # parse HTML encoding
+    blessed = blessed.replace(
+        '&amp;', '&'
+    ).replace(
+        '&lt;', '<'
+    ).replace(
+        '&gt;', '>'
+    )
     return blessed
 
 
