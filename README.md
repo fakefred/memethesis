@@ -43,3 +43,8 @@ Open issue to request for new formats
 ## Licenses
 - Code: GPLv3
 - Noto Sans: SIL
+
+## Disclaimer
+Any content within this README document is subject to addition, modification,
+and/or removal without notice from original author. This software is shipped
+with ABSOLUTELY NO WARRANTY, including warranty that you will not be banned.
