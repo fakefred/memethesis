@@ -1,20 +1,25 @@
 from PIL import Image
 from urllib import request
 from os import mkdir, listdir
-from re import match
+from re import match, split
 
 
 def is_in_emoji_form(word: str):
     return bool(match(':\w+:', word))
 
 
+def smart_split(string: str) -> list:
+    return split('\s+|\u200b+', string)
+
 def contains_emojis(content: str, emojis: dict) -> bool:
     # find if any of the words is a custom emoji on the instance
-    words = content.split()
+    words = smart_split(content)
     if emojis:  # emojis provided
         for w in words:
             if is_in_emoji_form(w) and w.strip(':') in emojis:
                 return True
+
+    return False
 
 
 def construct_emoji_dict(emoji_list: list) -> dict:

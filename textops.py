@@ -1,7 +1,7 @@
 from PIL import Image
 from PIL.ImageDraw import Draw
 from PIL.ImageFont import truetype
-from emojiops import get_emoji, contains_emojis, get_emoji_if_is
+from emojiops import get_emoji_if_is, smart_split, contains_emojis
 from re import sub
 
 
@@ -70,7 +70,7 @@ def fit_text_with_emojis_in_box(text: str, emojis={}, instance='', box=(0, 0),
     # less efficient than without
     # TODO: flag for no-render-emoji
     # split text into individual words, then draw them sequentially.
-    words = text.split(' ')
+    words = smart_split(text)
     canvas = Image.new('RGBA', box, color=(255, 255, 255, 0))  # method scope
 
     x, y = 0, 0
