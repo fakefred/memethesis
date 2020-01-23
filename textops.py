@@ -106,24 +106,18 @@ def fit_text_with_emojis_in_box(text: str, emojis={}, instance='', box=(0, 0),
             emoji = get_emoji_if_is(
                 word, size=font_size, instance=instance, emojis=emojis)
             # emoji: Image of it if is an emoji, else None
-            if emoji:
-                next_word_width = emoji.size[0]
-            else:
-                next_word_width = draw.textsize(word, font=font)[0]
+            word_width = (emoji.size[0]
+                               if emoji
+                               else draw.textsize(word, font=font)[0])
 
             # skip this size if even a single word won't fit
-            if next_word_width > box[0]:
+            if word_width > box[0]:
                 break
-
-            # fill line until it would overflow
-            while x + next_word_width <= box[0]:
-                word = words[idx]
                 emoji = get_emoji_if_is(word, size=font_size,
                                         instance=instance, emojis=emojis)
-                word_width = (emoji.size[0]
-                              if emoji
-                              else draw.textsize(word, font=font)[0])
 
+            # fill line until it would overflow
+            while x + word_width <= box[0]:
                 if emoji:
                     if 'A' in emoji.getbands():
                         # emoji has Alpha channel, aka transparency
@@ -131,13 +125,21 @@ def fit_text_with_emojis_in_box(text: str, emojis={}, instance='', box=(0, 0),
                     else:
                         canvas.paste(emoji, box=(x, y))
                 else:
-                    draw.text((x, y - font_size // 10), word, fill=color, font=font)
+                    draw.text((x, y - font_size // 10),
+                              word, fill=color, font=font)
 
                 x += word_width + space_width
+
                 idx += 1
                 if idx >= len(words):
                     break
-                next_word_width = draw.textsize(words[idx], font=font)[0]
+
+                word = words[idx]
+                emoji = get_emoji_if_is(word, size=font_size,
+                                        instance=instance, emojis=emojis)
+                word_width = (emoji.size[0]
+                                   if emoji
+                                   else draw.textsize(words[idx], font=font)[0])
 
             y += line_height
 

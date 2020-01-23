@@ -87,6 +87,7 @@ def memethesis(toot: str, emojis={}, instance='', saveto=''):
 
     if drakeness == 2:
         # is drake meme
+        print('Generating Drake meme')
         make_drake(**parsed_drake)
         return 'Drake'  # return meme type
 
