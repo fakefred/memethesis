@@ -125,7 +125,11 @@ def fit_text_with_emojis_in_box(text: str, emojis={}, instance='', box=(0, 0),
                               else draw.textsize(word, font=font)[0])
 
                 if emoji:
-                    canvas.paste(emoji, box=(x, y), mask=emoji)
+                    if 'A' in emoji.getbands():
+                        # emoji has Alpha channel, aka transparency
+                        canvas.paste(emoji, box=(x, y), mask=emoji)
+                    else:
+                        canvas.paste(emoji, box=(x, y))
                 else:
                     draw.text((x, y - font_size // 10), word, fill=color, font=font)
 
