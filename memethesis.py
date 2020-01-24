@@ -31,7 +31,9 @@ def uncurse(toot: str):
     return blessed
 
 
-def memethesis(toot: str, emojis={}, instance='', saveto=''):
+def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
+    # return meme type and parsed info if toot is meme
+    # else, return 'not a meme' and None.
     blessed = uncurse(toot)
     lines = blessed.splitlines()
 
@@ -86,11 +88,16 @@ def memethesis(toot: str, emojis={}, instance='', saveto=''):
 
     if drakeness == 2:
         # is drake meme
-        print('Generating Drake meme')
-        make_drake(**parsed_drake)
-        return 'Drake'  # return meme type
+        return ('Drake', parsed_drake)  # return meme type and parsed info
 
-    return 'not a meme'
+    return ('not a meme', None)
+
+
+def memethesis(fmt: str, info: dict):
+    # takes format and info
+    # calls corresponding memethesizing function
+    if fmt == 'Drake':
+        make_drake(**info)
 
 
 if __name__ == '__main__':
