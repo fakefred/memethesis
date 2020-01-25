@@ -1,5 +1,6 @@
 from re import sub, match
-from drake import make_drake
+from drake import parse_drake, make_drake
+from brainsize import parse_brainsize, make_brainsize
 from emojiops import construct_emoji_dict
 
 
@@ -35,48 +36,27 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
     # return meme type and parsed info if toot is meme
     # else, return 'not a meme' and None.
     blessed = uncurse(toot)
-    lines = blessed.splitlines()
 
-    """ 
-    Check if is drake meme (drakeness == 2)
-
-    Pattern:
-    [arbitrary content, as caption (TODO)]
-    [arbitrary content such as `@memethesis`]:drake_dislike: [arbitrary content]
-    [arbitrary content, concatenated to end of dislike with a line break]
-    :drake_like: [arbitrary content]
-    [arbitrary content, concatenated to end of like with a line break]
-    """
-    # TODO: def is_drake()
-    parsed_drake = {
-        'drakes': [],  # tuples of (dislike/like, text)
-        'emojis': emojis,
-        'instance': instance,
-        'saveto': saveto if saveto else 'drake.jpg'
-    }
-
-    for line in lines:
-        # remove zero-width spaces and leading/trailing whitespace
-        naked_line = line.replace('\u200b', '').strip()
-        # :drake_dislike: some text after it, not none [yes]
-        # :drake_dislike: [no]
-        if (naked_line.startswith(':drake_dislike: ') and
-                not naked_line.lstrip(':drake_dislike: ').strip() == ''):
-            parsed_drake['drakes'].append((
-                'dislike',
-                # remove leftmost :drake_dislike:
-                naked_line.replace(':drake_dislike: ', '', 1).strip()))
-
-        elif (naked_line.startswith(':drake_like: ') and
-                not naked_line.lstrip(':drake_like: ').strip() == ''):
-            parsed_drake['drakes'].append((
-                'like',
-                naked_line.replace(':drake_like: ', '', 1).strip()))
-
-    if parsed_drake['drakes']:
+    drakes = parse_drake(blessed)
+    if drakes:
         # is drake meme (or at least a portion thereof)
-        print(parsed_drake)
-        return ('Drake', parsed_drake)  # return meme type and parsed info
+        return ('Drake', {
+            'drakes': drakes,
+            'emojis': emojis,
+            'instance': instance,
+            'saveto': saveto
+        })  # return meme type and parsed info
+
+    # uh oh, is not drake
+    brains = parse_brainsize(blessed)
+    if brains:
+        # is brain size meme
+        return ('Brain Size', {
+            'brains': brains,
+            'emojis': emojis,
+            'instance': instance,
+            'saveto': saveto
+        })
 
     return ('not a meme', None)
 
@@ -86,6 +66,8 @@ def memethesis(fmt: str, info: dict):
     # calls corresponding memethesizing function
     if fmt == 'Drake':
         make_drake(**info)
+    elif fmt == 'Brain Size':
+        make_brainsize(**info)
 
 
 if __name__ == '__main__':
@@ -103,7 +85,7 @@ if __name__ == '__main__':
     # not a meme
     # Drake (x4)
     # print(memethesis(toot))
-    memethesis(TOOTS[-1], emojis=construct_emoji_dict([
+    print(prepare(TOOTS[-1], emojis=construct_emoji_dict([
         {"shortcode": "drake_dislike",
             "static_url": "https://cdn.mastodon.technology/custom_emojis/images/000/036/147/static/481369056bfbd567.png"},
         {"shortcode": "hacker_w",
@@ -141,4 +123,4 @@ if __name__ == '__main__':
         {"shortcode": "drake_like",
             "static_url": "https://cdn.mastodon.technology/custom_emojis/images/000/036/148/static/1c1a5daf467392a0.png"}
     ]),
-        instance='https://mastodon.technology/@fakefred/103526793891861663')
+        instance='https://mastodon.technology/@fakefred/103526793891861663'))

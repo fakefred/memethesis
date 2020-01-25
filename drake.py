@@ -1,6 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont
 from textops import make_text
-from datetime import datetime
 from imageops import vertically_stack
 
 BLACK = (0, 0, 0, 255)
@@ -11,7 +10,35 @@ TEXTSPACE = (400, 250)
 # TODO: automate memetheses, with only template image and text spaces provided in csv
 
 
-def make_drake(drakes, emojis={}, instance='', saveto='drake_output.jpg'):
+def parse_drake(content: str):
+    lines = content.splitlines()
+    drakes = []  # tuples of (dislike/like, text)
+
+    for line in lines:
+        # remove zero-width spaces and leading/trailing whitespace
+        naked_line = line.replace('\u200b', '').strip()
+        # :drake_dislike: some text after it, not none [yes]
+        # :drake_dislike: [no]
+        if (naked_line.startswith(':drake_dislike: ') and
+                not naked_line.lstrip(':drake_dislike: ').strip() == ''):
+            drakes.append((
+                'dislike',
+                # remove leftmost :drake_dislike:
+                naked_line.replace(':drake_dislike: ', '', 1).strip()))
+
+        elif (naked_line.startswith(':drake_like: ') and
+                not naked_line.lstrip(':drake_like: ').strip() == ''):
+            drakes.append((
+                'like',
+                naked_line.replace(':drake_like: ', '', 1).strip()))
+
+    if drakes:
+        return drakes
+
+    return None
+
+
+def make_drake(drakes: list, emojis={}, instance='', saveto='drake_output.jpg'):
     dislike_template = Image.open('./res/template/drake/drake_dislike.jpg')
     like_template = Image.open('./res/template/drake/drake_like.jpg')
 
