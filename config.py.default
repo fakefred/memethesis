@@ -4,3 +4,7 @@ API_BASE_URL = ''
 CLIENT_ID = ''
 CLIENT_SECRET = ''
 ACCESS_TOKEN = ''
+
+# Rate Limit
+RATELIMIT_TIME = 5  # minutes
+RATELIMIT_NUM = 10  # posts
