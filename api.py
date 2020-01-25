@@ -80,7 +80,7 @@ class Listener(StreamListener):
 
                 # log to console
                 print(
-                    f"Generated {meme_type} meme for status id {status['id']}")
+                    f"Generated {meme_type} meme for status id {status['id']} by {acct}")
 
                 # log this memethesis into volatile memory for rate limiting
                 if acct in record:
@@ -88,7 +88,7 @@ class Listener(StreamListener):
                 else:
                     record[acct] = 1
                 # trigger erase_one_from_record(acct) in several minutes
-                Timer(RATELIMIT_TIME * 60.0, erase_one_from_record, acct).start()
+                Timer(RATELIMIT_TIME * 60.0, erase_one_from_record, [acct]).start()
 
                 # remove meme image
                 remove('output/' + path)
