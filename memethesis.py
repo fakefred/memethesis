@@ -1,4 +1,4 @@
-from re import sub
+from re import sub, match
 from drake import make_drake
 from emojiops import construct_emoji_dict
 
@@ -48,46 +48,34 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
     [arbitrary content, concatenated to end of like with a line break]
     """
     # TODO: def is_drake()
-    drakeness = 0
     parsed_drake = {
-        'dislike': '',
-        'like': '',
+        'drakes': [],  # tuples of (dislike/like, text)
         'emojis': emojis,
         'instance': instance,
         'saveto': saveto if saveto else 'drake.jpg'
     }
 
     for line in lines:
-        # if line.strip().startswith(':drake_dislike:') and drakeness == 0:
-        if (not line.find(':drake_dislike:') == -1 and
-            not line.strip().endswith(':drake_dislike:') and
-                drakeness == 0):
-            # start dislike
-            drakeness += 1
-            # split() string
-            # '@memethesis :drake_dislike: send :drake_dislike: to people you disagree with'
-            # into ['@memethesis ', ' send ', ' to people you disagree with']
-            # then merge the list starting from index 1
-            # with ':drake_dislike: in between each adjacent pair
-            # so that it becomes ' send :drake_dislike: to people you disagree with'
-            # finally strip() the leading space
-            parsed_drake['dislike'] = ':drake_dislike:'.join(
-                line.split(':drake_dislike:')[1:]
-            ).strip()
-            # TODO: limit line split to once
-        elif line.strip().startswith(':drake_like:') and drakeness == 1:
-            drakeness += 1
-            # remove leading :drake_like:, but not the others
-            parsed_drake['like'] = line.replace(':drake_like:', '', 1).strip()
-        elif drakeness == 1:
-            # append line to dislike
-            parsed_drake['dislike'] += '\n' + line.strip()
-        elif drakeness == 2:
-            # append line to like
-            parsed_drake['like'] += '\n' + line.strip()
+        # remove zero-width spaces and leading/trailing whitespace
+        naked_line = line.replace('\u200b', '').strip()
+        # :drake_dislike: some text after it, not none [yes]
+        # :drake_dislike: [no]
+        if (naked_line.startswith(':drake_dislike: ') and
+                not naked_line.lstrip(':drake_dislike: ').strip() == ''):
+            parsed_drake['drakes'].append((
+                'dislike',
+                # remove leftmost :drake_dislike:
+                naked_line.replace(':drake_dislike: ', '', 1).strip()))
 
-    if drakeness == 2:
-        # is drake meme
+        elif (naked_line.startswith(':drake_like: ') and
+                not naked_line.lstrip(':drake_like: ').strip() == ''):
+            parsed_drake['drakes'].append((
+                'like',
+                naked_line.replace(':drake_like: ', '', 1).strip()))
+
+    if parsed_drake['drakes']:
+        # is drake meme (or at least a portion thereof)
+        print(parsed_drake)
         return ('Drake', parsed_drake)  # return meme type and parsed info
 
     return ('not a meme', None)

@@ -38,12 +38,12 @@ def wrap_text(text: str, maxwidth: int, font) -> str:
     return wrapped_text
 
 
-def fit_text_in_box(text: str, box=(0, 0), font_path='',
-                    color=(0, 0, 0, 255), emojis={}, instance=''):
+def make_text(text: str, box=(0, 0), font_path='',
+              color=(0, 0, 0, 255), emojis={}, instance=''):
     if contains_emojis(text, emojis):
         # fancy rendering enabled
         # redirect to fit_text_with_emojis_in_box()
-        return fit_text_with_emojis_in_box(
+        return make_emoji_text(
             text, emojis=emojis, instance=instance,
             box=box, font_path=font_path, color=color)
 
@@ -63,8 +63,8 @@ def fit_text_in_box(text: str, box=(0, 0), font_path='',
     return canvas
 
 
-def fit_text_with_emojis_in_box(text: str, emojis={}, instance='', box=(0, 0),
-                                font_path='', color=(0, 0, 0, 255)):
+def make_emoji_text(text: str, emojis={}, instance='', box=(0, 0),
+                    font_path='', color=(0, 0, 0, 255)):
     # different method
     # used for text with custom emojis
     # less efficient than without
@@ -107,8 +107,8 @@ def fit_text_with_emojis_in_box(text: str, emojis={}, instance='', box=(0, 0),
                 word, size=font_size, instance=instance, emojis=emojis)
             # emoji: Image of it if is an emoji, else None
             word_width = (emoji.size[0]
-                               if emoji
-                               else draw.textsize(word, font=font)[0])
+                          if emoji
+                          else draw.textsize(word, font=font)[0])
 
             # skip this size if even a single word won't fit
             if word_width > box[0]:
@@ -138,8 +138,8 @@ def fit_text_with_emojis_in_box(text: str, emojis={}, instance='', box=(0, 0),
                 emoji = get_emoji_if_is(word, size=font_size,
                                         instance=instance, emojis=emojis)
                 word_width = (emoji.size[0]
-                                   if emoji
-                                   else draw.textsize(words[idx], font=font)[0])
+                              if emoji
+                              else draw.textsize(words[idx], font=font)[0])
 
             y += line_height
 
