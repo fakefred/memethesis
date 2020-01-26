@@ -4,6 +4,7 @@ from emojiops import construct_emoji_dict
 from os import remove
 from threading import Timer
 from config import *
+from fontconfig import LANGS
 
 
 masto = Mastodon(
@@ -41,7 +42,8 @@ class Listener(StreamListener):
         # All your notifications are belong to us!
         if ntf['type'] == 'mention':
             status = ntf['status']
-            path = str(status['id']) + '.jpg'
+            sid = status['id']
+            path = str(sid) + '.jpg'
             # @handle[@domain]; uniqueness guaranteed
             acct = status['account']['acct']
 
@@ -52,7 +54,18 @@ class Listener(StreamListener):
                 saveto=path
             )
 
-            if not meme_type == 'not a meme':
+            if meme_type == 'not a meme':
+                return
+            elif meme_type == 'language not supported':
+                supported_languages = ', '.join(LANGS.keys())
+                masto.status_reply(
+                    status,
+                    f'Sorry, the language you specified is not yet supported. You can Delete and Redraft the post using one of these: {supported_languages}. Language requests are welcome.',
+                    visibility=determine_visibility(status['visibility'])
+                )
+                print(f'Language not supported, status id {sid} by {acct}')
+                return
+            else:
                 if not within_limit(acct):
                     # hit rate limit
                     masto.status_reply(
@@ -60,7 +73,7 @@ class Listener(StreamListener):
                         f'Sorry, you have triggered my rate limiting mechanism. This is not serious (at all). Please try again in at most {RATELIMIT_TIME} minutes.',
                         visibility=determine_visibility(status['visibility'])
                     )
-                    print(f'Account {acct} hit their limit')
+                    print(f'Account {acct} hit their limit, status id {sid}')
                     return  # exit method, refuse to generate meme
 
                 # generate meme
@@ -80,7 +93,7 @@ class Listener(StreamListener):
 
                 # log to console
                 print(
-                    f"Generated {meme_type} meme for status id {status['id']} by {acct}")
+                    f"Generated {meme_type} meme for status id {sid} by {acct}")
 
                 # log this memethesis into volatile memory for rate limiting
                 if acct in record:
@@ -88,10 +101,14 @@ class Listener(StreamListener):
                 else:
                     record[acct] = 1
                 # trigger erase_one_from_record(acct) in several minutes
-                Timer(RATELIMIT_TIME * 60.0, erase_one_from_record, [acct]).start()
+                Timer(RATELIMIT_TIME * 60.0,
+                      erase_one_from_record, [acct]).start()
 
                 # remove meme image
-                remove('output/' + path)
+                try:
+                    remove('output/' + path)
+                except FileNotFoundError:
+                    pass  # better than crashing completely
 
 
 def start_streaming():

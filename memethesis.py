@@ -2,6 +2,8 @@ from re import sub, match
 from drake import parse_drake, make_drake
 from brainsize import parse_brainsize, make_brainsize
 from emojiops import construct_emoji_dict
+from fontconfig import LANGS, MONO
+from args import parse_arguments
 
 
 def uncurse(toot: str):
@@ -37,12 +39,22 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
     # else, return 'not a meme' and None.
     blessed = uncurse(toot)
 
+    arguments = parse_arguments(blessed)
+
+    if arguments['mono']:
+        font = MONO
+    elif arguments['lang'] in LANGS:
+        font = LANGS[arguments['lang']]
+    else:
+        return ('language not supported', None)
+
     drakes = parse_drake(blessed)
     if drakes:
         # is drake meme (or at least a portion thereof)
         return ('Drake', {
             'drakes': drakes,
             'emojis': emojis,
+            'font': font,
             'instance': instance,
             'saveto': saveto
         })  # return meme type and parsed info
@@ -54,10 +66,13 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
         return ('Brain Size', {
             'brains': brains,
             'emojis': emojis,
+            'font': font,
             'instance': instance,
             'saveto': saveto
         })
 
+    # NOTE TO SELF: do not forget to add proxy to def memethesis()
+    # when adding a new meme type
     return ('not a meme', None)
 
 

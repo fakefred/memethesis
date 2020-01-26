@@ -38,7 +38,8 @@ def parse_drake(content: str):
     return None
 
 
-def make_drake(drakes: list, emojis={}, instance='', saveto='drake_output.jpg'):
+def make_drake(drakes: list, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',
+               instance='', saveto='drake_output.jpg'):
     dislike_template = Image.open('./res/template/drake/drake_dislike.jpg')
     like_template = Image.open('./res/template/drake/drake_like.jpg')
 
@@ -51,7 +52,7 @@ def make_drake(drakes: list, emojis={}, instance='', saveto='drake_output.jpg'):
             temp = dislike_template.copy()
             text = make_text(
                 drake[1], emojis=emojis, box=TEXTSPACE, instance=instance,
-                font_path='./res/fonts/NotoSans-Regular.ttf')
+                font_path=font)
             temp.paste(text, box=(370, 12), mask=text)
             drake_panels.append(temp)
 
@@ -59,7 +60,7 @@ def make_drake(drakes: list, emojis={}, instance='', saveto='drake_output.jpg'):
             temp = like_template.copy()
             text = make_text(
                 drake[1], emojis=emojis, box=TEXTSPACE, instance=instance,
-                font_path='./res/fonts/NotoSans-Regular.ttf')
+                font_path=font)
             temp.paste(text, box=(370, 20), mask=text)
             drake_panels.append(temp)
 
