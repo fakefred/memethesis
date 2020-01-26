@@ -1,8 +1,36 @@
 from PIL import Image
 from PIL.ImageDraw import Draw
 from PIL.ImageFont import truetype
-from emojiops import get_emoji_if_is, smart_split, contains_emojis
-from re import sub
+from emojiops import get_emoji_if_is, contains_emojis
+from re import sub, split
+
+
+def is_CJK(char: str) -> bool:
+    if len(char) == 1:
+        point = ord(char)
+        if (point in range(0x2E80, 0x9FFF)  # C, J
+                or point in range(0xAC00, 0xD7FF)):  # K
+            return True
+    return False
+
+
+def advanced_split(text: str) -> list:
+    normal_split = split('\s+|\u200b+', text)
+    further_split = []
+    for piece in normal_split:
+        for char in piece:
+            if is_CJK(char):
+                further_split.append(char)
+            else:
+                if len(further_split) == 0:
+                    further_split.append(char)
+                elif further_split[-1] == '' or not is_CJK(further_split[-1][-1]):
+                    further_split[-1] += char
+                else:
+                    further_split.append(char)
+        further_split.append('')
+    # HACK remove all ''
+    return list(filter(None, further_split))
 
 
 def replace_emojo(string: str,  repl: str) -> str:
@@ -20,7 +48,7 @@ def wrap_text(text: str, maxwidth: int, font) -> str:
     draw = Draw(canvas)
 
     # split words and iterate
-    words = text.split(' ')
+    words = advanced_split(text)
     current_line = ''
     wrapped_text = ''
     for word in words:
@@ -70,7 +98,7 @@ def make_emoji_text(text: str, emojis={}, instance='', box=(0, 0),
     # less efficient than without
     # TODO: flag for no-render-emoji
     # split text into individual words, then draw them sequentially.
-    words = smart_split(text)
+    words = advanced_split(text)
     canvas = Image.new('RGBA', box, color=(255, 255, 255, 0))  # method scope
 
     x, y = 0, 0
@@ -113,8 +141,6 @@ def make_emoji_text(text: str, emojis={}, instance='', box=(0, 0),
             # skip this size if even a single word won't fit
             if word_width > box[0]:
                 break
-                emoji = get_emoji_if_is(word, size=font_size,
-                                        instance=instance, emojis=emojis)
 
             # fill line until it would overflow
             while x + word_width <= box[0]:
@@ -128,7 +154,7 @@ def make_emoji_text(text: str, emojis={}, instance='', box=(0, 0),
                     draw.text((x, y - font_size // 10),
                               word, fill=color, font=font)
 
-                x += word_width + space_width
+                x += word_width + (space_width if not is_CJK(word) else 0)
 
                 idx += 1
                 if idx >= len(words):
