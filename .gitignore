@@ -6,3 +6,4 @@ config.py
 test.txt
 logs/responded.log
 res/emojis/*
+res/fonts/*
