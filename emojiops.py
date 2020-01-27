@@ -11,6 +11,7 @@ def is_in_emoji_form(word: str):
 def smart_split(string: str) -> list:
     return split('\s+|\u200b+', string)
 
+
 def contains_emojis(content: str, emojis: dict) -> bool:
     # find if any of the words is a custom emoji on the instance
     words = smart_split(content)
@@ -67,9 +68,12 @@ def get_emoji(shortcode='', size=24, instance='', emojis={}):
 
     # save to ./res/emojis/{instance}/{shortcode}.{extension from emoji url}
     filename = path + '/' + combine_filenames(shortcode, emojis[shortcode])
-    request.urlretrieve(emojis[shortcode], filename)
 
-    return open_in_size(filename, size)
+    try:
+        request.urlretrieve(emojis[shortcode], filename)
+        return open_in_size(filename, size)
+    except request.URLError:
+        return Image.open('./res/emojis/error.png').resize((size, size))
 
 
 def get_emoji_if_is(word: str, size=24, instance='', emojis={}):
