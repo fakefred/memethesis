@@ -5,34 +5,19 @@ from stonks import parse_stonks, make_stonks
 from emojiops import construct_emoji_dict
 from fontconfig import LANGS, MONO
 from args import parse_arguments
+from html import unescape
+from htmlops import TootParser
 
 
 def uncurse(toot: str):
     # toots come in a cursed format (HTML)
     # tags like <p>, <a href=""> and <br /> may appear
-    blessed = ''
+    parser = TootParser()
+    parser.feed(toot)
+    blessed = parser.content
 
-    toot = sub('<\s*br\s*/?>|</p><p>', '\n', toot)
-    # target: throw away anything braced with <>
-    in_square_bracket = False
-    for char in toot:
-        if char == '<':
-            in_square_bracket = True
-        elif char == '>':
-            in_square_bracket = False
-        else:
-            if not in_square_bracket:
-                blessed += char
-
-    # parse HTML encoding
-    blessed = blessed.replace(
-        '&amp;', '&'
-    ).replace(
-        '&lt;', '<'
-    ).replace(
-        '&gt;', '>'
-    )
-    return blessed
+    # also parse HTML encoding
+    return unescape(blessed)
 
 
 def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
