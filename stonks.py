@@ -1,7 +1,6 @@
 from PIL import Image, ImageDraw
 from emojiops import is_in_emoji_form, get_emoji
 from args import parse_arguments
-import pysnooper
 
 BLACK = (0, 0, 0, 255)
 TRANSPARENT = (255, 255, 255, 0)
