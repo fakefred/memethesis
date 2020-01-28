@@ -20,14 +20,14 @@ def parse_drake(content: str):
         # :drake_dislike: some text after it, not none [yes]
         # :drake_dislike: [no]
         if (naked_line.startswith(':drake_dislike: ') and
-                not naked_line.lstrip(':drake_dislike: ').strip() == ''):
+                naked_line.replace(':drake_dislike: ', '', 1).strip()):
             drakes.append((
                 'dislike',
                 # remove leftmost :drake_dislike:
                 naked_line.replace(':drake_dislike: ', '', 1).strip()))
 
         elif (naked_line.startswith(':drake_like: ') and
-                not naked_line.lstrip(':drake_like: ').strip() == ''):
+                naked_line.replace(':drake_like: ', '', 1).strip()):
             drakes.append((
                 'like',
                 naked_line.replace(':drake_like: ', '', 1).strip()))
