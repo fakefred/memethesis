@@ -63,6 +63,7 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
         return ('Stonks', {
             'stonks': stonks,
             'emojis': emojis,
+            'font': font,
             'instance': instance,
             'saveto': saveto
         })

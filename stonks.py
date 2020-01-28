@@ -1,12 +1,14 @@
 from PIL import Image, ImageDraw
 from emojiops import is_in_emoji_form, get_emoji
+from textops import make_text
 from args import parse_arguments
 
 BLACK = (0, 0, 0, 255)
-TRANSPARENT = (255, 255, 255, 0)
+WHITE = (255, 255, 255, 255)
 
 HEAD = (55, 36)
 BODY = (8, 227)
+TEXT = (490, 350)
 
 
 def parse_stonks(content: str):
@@ -17,8 +19,8 @@ def parse_stonks(content: str):
     stonks = {
         'head': '',
         'flip': args['flip'],  # horizontal flip
-        'bad': False
-        # TODO: customize text
+        'bad': False,
+        'custom_text': ''
     }
 
     for line in lines:
@@ -31,17 +33,26 @@ def parse_stonks(content: str):
                 if words and is_in_emoji_form(words[0]):
                     stonks['head'] = words[0].strip(':')
                     stonks['bad'] = True if idx == 1 else False
+                    if len(words) > 1:
+                        # custom text present
+                        stonks['custom_text'] = ' '.join(words[1:])
                     return stonks
-
     return None
 
 
 def make_stonks(stonks: dict, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',
                 instance='', saveto='stonks_output.jpg'):
-    stonks_template = Image.open(
-        ('./res/template/stonks/bg_stinks.jpg' if stonks['bad']
-         else './res/template/stonks/bg_stonks.jpg')
-    )
+    if stonks['bad'] and stonks['custom_text']:
+        stonks_template = Image.open(
+            './res/template/stonks/bg_stinks_notext.jpg')
+    elif stonks['bad'] and not stonks['custom_text']:
+        stonks_template = Image.open('./res/template/stonks/bg_stinks.jpg')
+    elif not stonks['bad'] and stonks['custom_text']:
+        stonks_template = Image.open(
+            './res/template/stonks/bg_stonks_notext.jpg')
+    elif not stonks['bad'] and not stonks['custom_text']:
+        stonks_template = Image.open('./res/template/stonks/bg_stonks.jpg')
+
     mememan = Image.open('./res/template/stonks/headless_mememan.png')
 
     emoji = get_emoji(shortcode=stonks['head'], size=220,
@@ -53,6 +64,11 @@ def make_stonks(stonks: dict, emojis={}, font='./res/fonts/NotoSans-Regular.ttf'
     stonks_template.paste(emoji, box=HEAD,
                           mask=emoji if 'A' in emoji.getbands() else None)
     stonks_template.paste(mememan, box=BODY, mask=mememan)
+
+    if stonks['custom_text']:
+        text = make_text(stonks['custom_text'], box=(290, 95), font_path=font,
+                         color=WHITE, stroke=BLACK, emojis=emojis, instance=instance)
+        stonks_template.paste(text, box=TEXT, mask=text)
 
     stonks_template.save('./output/' + saveto)
     return stonks_template

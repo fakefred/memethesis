@@ -67,13 +67,15 @@ def wrap_text(text: str, maxwidth: int, font) -> str:
 
 
 def make_text(text: str, box=(0, 0), font_path='',
-              color=(0, 0, 0, 255), emojis={}, instance=''):
+              color=(0, 0, 0, 255), stroke=None,  # stroke can be a color tuple
+              emojis={}, instance=''):
     if contains_emojis(text, emojis):
         # fancy rendering enabled
         # redirect to fit_text_with_emojis_in_box()
         return make_emoji_text(
             text, emojis=emojis, instance=instance,
-            box=box, font_path=font_path, color=color)
+            box=box, font_path=font_path, color=color,
+            stroke=stroke)
 
     canvas = Image.new('RGBA', box, color=(255, 255, 255, 0))
     draw = Draw(canvas)
@@ -87,12 +89,13 @@ def make_text(text: str, box=(0, 0), font_path='',
         textsize = draw.multiline_textsize(wrapped, font=font)
         # when wrapped text fits in box, loop will exit, and font is remembered
 
-    draw.multiline_text((0, 0), wrapped, fill=color, font=font)
+    draw.multiline_text((0, 0), wrapped, fill=color, font=font, stroke_fill=stroke,
+                        stroke_width=(2 if stroke is not None else 0))
     return canvas
 
 
 def make_emoji_text(text: str, emojis={}, instance='', box=(0, 0),
-                    font_path='', color=(0, 0, 0, 255)):
+                    font_path='', color=(0, 0, 0, 255), stroke=None):
     # different method
     # used for text with custom emojis
     # less efficient than without
@@ -152,7 +155,8 @@ def make_emoji_text(text: str, emojis={}, instance='', box=(0, 0),
                         canvas.paste(emoji, box=(x, y))
                 else:
                     draw.text((x, y - font_size // 10),
-                              word, fill=color, font=font)
+                              word, fill=color, font=font, stroke_fill=stroke,
+                              stroke_width=(2 if stroke is not None else 0))
 
                 x += word_width + (space_width if not is_CJK(word) else 0)
 
