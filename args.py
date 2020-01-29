@@ -10,9 +10,9 @@ def parse_arguments(toot: str):
     }  # default
 
     for line in [l.strip().lower() for l in toot.splitlines()]:
-        if line.startswith('set '):
+        if line.startswith('set:'):
             args = [l.strip().split(maxsplit=1)
-                    for l in line.replace('set ', '', 1).split(',')]
+                    for l in line.replace('set:', '', 1).split(',')]
             if args:
                 for arg in args:
                     if len(arg) == 1:
