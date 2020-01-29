@@ -4,6 +4,7 @@ from emojiops import construct_emoji_dict
 from config import *
 from fontconfig import LANGS
 from os import remove
+from datetime import datetime, timezone
 from threading import Timer
 
 
@@ -16,6 +17,12 @@ masto = Mastodon(
 
 # record for rate limit
 record = {}
+
+
+def time_string() -> str:
+    # 2020-01-29 12:30:34|.957996+00:00
+    # <--   splice    -->| HACK
+    return str(datetime.now(timezone.utc))[:19]
 
 
 def erase_one_from_record(account: str):
@@ -73,7 +80,7 @@ def handle_toot(status, trace=False, visibility='', reply_to=None) -> bool:
             visibility=determine_visibility(
                 status['visibility']) if not visibility else visibility
         )
-        print(f'Language not supported, status id {sid} by {acct}')
+        print(f'{time_string()}: Language not supported, status id {sid} by {acct}')
         return False
     elif not meme_type == 'empty':
         if not within_limit(acct):
@@ -84,7 +91,7 @@ def handle_toot(status, trace=False, visibility='', reply_to=None) -> bool:
                 visibility=(determine_visibility(status['visibility'])
                             if not visibility else visibility)
             )
-            print(f'Account {acct} hit their limit, status id {sid}')
+            print(f'{time_string()}: Account {acct} hit their limit, status id {sid}')
             return False  # exit method, refuse to generate meme
         # generate meme
         memethesis(meme_type, info)
@@ -93,7 +100,7 @@ def handle_toot(status, trace=False, visibility='', reply_to=None) -> bool:
             'output/' + path, mime_type='image/jpeg')['id']
         # publish toot
         masto.status_reply(
-            status if reply_to is not None else reply_to,
+            status if reply_to is None else reply_to,
             f'Here\'s your {meme_type} meme',
             visibility=determine_visibility(
                 status['visibility']) if not visibility else visibility,
@@ -101,7 +108,7 @@ def handle_toot(status, trace=False, visibility='', reply_to=None) -> bool:
         )
         # log to console
         print(
-            f"Generated {meme_type} meme for status id {sid} by {acct}")
+            f'{time_string()}: Generated {meme_type} meme for status id {sid} by {acct}')
 
         if not trace:
             # log this memethesis into volatile memory for rate limiting
