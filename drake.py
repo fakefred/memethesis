@@ -1,5 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
 from caption import parse_caption, make_caption
+from separator import is_sep, make_sep
 from textops import make_text
 from imageops import vertically_stack
 import re
@@ -43,6 +44,9 @@ def parse_drake(content: str):
                 parse_caption(naked_line)
             ))
 
+        elif is_sep(naked_line):
+            drakes.append(('sep', ''))
+
     if is_drake:
         return drakes
 
@@ -80,6 +84,9 @@ def make_drake(drakes: list, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',
                 make_caption(text=drake[1], emojis=emojis,
                              instance=instance, width=800, font=font)
             )
+        
+        elif drake[0] == 'sep':
+            drake_panels.append(make_sep(width=800))
 
     meme = vertically_stack(drake_panels)
 

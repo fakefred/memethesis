@@ -1,5 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
 from caption import parse_caption, make_caption
+from separator import is_sep, make_sep
 from textops import make_text
 from imageops import vertically_stack
 from re import match
@@ -37,6 +38,9 @@ def parse_brainsize(content: str):
                 'caption',
                 parse_caption(naked_line)
             ))
+
+        elif is_sep(naked_line):
+            brains.append(('sep', ''))
         
 
     if is_brainsize:
@@ -67,6 +71,8 @@ def make_brainsize(brains: list, emojis={}, font='./res/fonts/NotoSans-Regular.t
                 make_caption(text=brain[1], emojis=emojis,
                              instance=instance, width=800, font=font)
             )
+        elif brain[0] == 'sep':
+            brain_panels.append(make_sep(width=800))
 
     meme = vertically_stack(brain_panels)
 
