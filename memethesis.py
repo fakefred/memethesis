@@ -24,6 +24,8 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
     # return meme type and parsed info if toot is meme
     # else, return 'not a meme' and None.
     blessed = uncurse(toot)
+    if not blessed.strip():
+        return ('empty', None)
 
     arguments = parse_arguments(blessed)
 
