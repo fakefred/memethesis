@@ -1,4 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont
+from caption import parse_caption, make_caption
 from textops import make_text
 from imageops import vertically_stack
 from re import match
@@ -16,6 +17,7 @@ TEXTSPACES = [(380, 250),  # these brain size
 def parse_brainsize(content: str):
     lines = content.splitlines()
     brains = []  # tuples of (dislike/like, text)
+    is_brainsize = False
 
     for line in lines:
         # remove zero-width spaces and leading/trailing whitespace
@@ -28,8 +30,16 @@ def parse_brainsize(content: str):
             brainsize = int(m.group(0)[6])  # guaranteed to be within [1-5]
             brains.append((brainsize, naked_line.replace(
                 f':brain{brainsize}:', '', 1).strip()))
+            is_brainsize = True
 
-    if brains:
+        elif parse_caption(naked_line):
+            brains.append((
+                'caption',
+                parse_caption(naked_line)
+            ))
+        
+
+    if is_brainsize:
         return brains
 
     return None
@@ -52,6 +62,11 @@ def make_brainsize(brains: list, emojis={}, font='./res/fonts/NotoSans-Regular.t
                 instance=instance, font_path=font)
             temp.paste(text, box=(10, 8), mask=text)
             brain_panels.append(temp)
+        elif brain[0] == 'caption':
+            brain_panels.append(
+                make_caption(text=brain[1], emojis=emojis,
+                             instance=instance, width=800, font=font)
+            )
 
     meme = vertically_stack(brain_panels)
 

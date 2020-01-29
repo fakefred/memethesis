@@ -1,6 +1,8 @@
 from PIL import Image, ImageDraw, ImageFont
+from caption import parse_caption, make_caption
 from textops import make_text
 from imageops import vertically_stack
+import re
 
 BLACK = (0, 0, 0, 255)
 TRANSPARENT = (255, 255, 255, 0)
@@ -13,6 +15,7 @@ TEXTSPACE = (400, 250)
 def parse_drake(content: str):
     lines = content.splitlines()
     drakes = []  # tuples of (dislike/like, text)
+    is_drake = False
 
     for line in lines:
         # remove zero-width spaces and leading/trailing whitespace
@@ -25,14 +28,22 @@ def parse_drake(content: str):
                 'dislike',
                 # remove leftmost :drake_dislike:
                 naked_line.replace(':drake_dislike: ', '', 1).strip()))
+            is_drake = True
 
         elif (naked_line.startswith(':drake_like: ') and
                 naked_line.replace(':drake_like: ', '', 1).strip()):
             drakes.append((
                 'like',
                 naked_line.replace(':drake_like: ', '', 1).strip()))
+            is_drake = True
 
-    if drakes:
+        elif parse_caption(naked_line) is not None:
+            drakes.append((
+                'caption',
+                parse_caption(naked_line)
+            ))
+
+    if is_drake:
         return drakes
 
     return None
@@ -63,6 +74,12 @@ def make_drake(drakes: list, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',
                 font_path=font)
             temp.paste(text, box=(370, 20), mask=text)
             drake_panels.append(temp)
+
+        elif drake[0] == 'caption':
+            drake_panels.append(
+                make_caption(text=drake[1], emojis=emojis,
+                             instance=instance, width=800, font=font)
+            )
 
     meme = vertically_stack(drake_panels)
 

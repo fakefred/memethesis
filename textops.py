@@ -66,7 +66,7 @@ def wrap_text(text: str, maxwidth: int, font) -> str:
     return wrapped_text
 
 
-def make_text(text: str, box=(0, 0), font_path='',
+def make_text(text: str, box=(0, 0), font_path='', init_font_size=76,
               color=(0, 0, 0, 255), stroke=None,  # stroke can be a color tuple
               emojis={}, instance=''):
     if contains_emojis(text, emojis):
@@ -80,9 +80,16 @@ def make_text(text: str, box=(0, 0), font_path='',
     canvas = Image.new('RGBA', box, color=(255, 255, 255, 0))
     draw = Draw(canvas)
     textsize = (box[0] + 1, box[1] + 1)
-    font_size = 76  # max font size is 72; decrease by 4 until fit
+    font_size = init_font_size  # max font size is 72; decrease by 4 until fit
     while textsize[0] > box[0] or textsize[1] > box[1]:  # doesn't fit
-        font_size -= (4 if font_size > 32 else 2)
+        if 0 < font_size <= 16:
+            font_size -= 1
+        elif 16 < font_size < 32:
+            font_size -= 2
+        elif font_size >= 32:
+            font_size -= 4
+        else:
+            break
         font = truetype(font_path, size=font_size)
         # try to fit in the horizontal boundary
         wrapped = wrap_text(text, box[0], font)
@@ -94,7 +101,8 @@ def make_text(text: str, box=(0, 0), font_path='',
     return canvas
 
 
-def make_emoji_text(text: str, emojis={}, instance='', box=(0, 0),
+def make_emoji_text(text: str, emojis={}, instance='',
+                    box=(0, 0), init_font_size=76,
                     font_path='', color=(0, 0, 0, 255), stroke=None):
     # different method
     # used for text with custom emojis
@@ -105,7 +113,7 @@ def make_emoji_text(text: str, emojis={}, instance='', box=(0, 0),
     canvas = Image.new('RGBA', box, color=(255, 255, 255, 0))  # method scope
 
     x, y = 0, 0
-    font_size = 76
+    font_size = init_font_size
 
     while True:
         # (re-)initiate canvas
@@ -115,7 +123,9 @@ def make_emoji_text(text: str, emojis={}, instance='', box=(0, 0),
         # for each font size, first fill the width.
         # if the height exceeds the size of the box, reduce font size.
         # repeat font size reduction until fits.
-        if 0 < font_size < 32:
+        if 0 < font_size <= 16:
+            font_size -= 1
+        elif 16 < font_size < 32:
             font_size -= 2
         elif font_size >= 32:
             font_size -= 4
