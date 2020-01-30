@@ -58,6 +58,10 @@ def handle_toot(status, trace=False, visibility='', reply_to=None) -> bool:
 
     returns bool: True if `status` is a meme.
     '''
+    # reject if account is of a bot, unless this is a traced handle request
+    if status['account']['bot'] and not trace:
+        return  # UNTESTED
+
     sid = status['id']
     path = str(sid) + '.jpg'
     # @handle[@domain]; uniqueness guaranteed
