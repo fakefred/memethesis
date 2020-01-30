@@ -74,7 +74,7 @@ def make_brainsize(brains: list, emojis={}, font='./res/fonts/NotoSans-Regular.t
         elif brain[0] == 'sep':
             brain_panels.append(make_sep(width=800))
 
-    meme = vertically_stack(brain_panels)
+    meme = stack(brain_panels)
 
     meme.save('./output/' + saveto)
     return meme

@@ -88,7 +88,7 @@ def make_drake(drakes: list, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',
         elif drake[0] == 'sep':
             drake_panels.append(make_sep(width=800))
 
-    meme = vertically_stack(drake_panels)
+    meme = stack(drake_panels)
 
     meme.save('./output/' + saveto)
     return meme

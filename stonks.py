@@ -92,7 +92,7 @@ def make_stonks(stonks: dict, emojis={}, font='./res/fonts/NotoSans-Regular.ttf'
         stonks_template.paste(text, box=TEXT, mask=text)
 
     panels.append(stonks_template)
-    meme = vertically_stack(panels)
+    meme = stack(panels)
     meme.save('./output/' + saveto)
     return meme
 
