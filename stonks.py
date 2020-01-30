@@ -1,4 +1,7 @@
 from PIL import Image, ImageDraw
+from caption import parse_caption, make_caption
+from separator import is_sep, make_sep
+from imageops import vertically_stack
 from emojiops import is_in_emoji_form, get_emoji
 from textops import make_text
 from args import parse_arguments
@@ -17,6 +20,7 @@ def parse_stonks(content: str):
     args = parse_arguments(content)
 
     stonks = {
+        'cap_sep': [],
         'head': '',
         'flip': args['flip'],  # horizontal flip
         'bad': False,
@@ -26,6 +30,13 @@ def parse_stonks(content: str):
     for line in lines:
         # remove zero-width spaces and leading/trailing whitespace
         naked_line = line.replace('\u200b', '').strip()
+        # caption and sep (can only be added *before* meme body)
+        cap = parse_caption(naked_line)
+        if cap is not None:
+            stonks['cap_sep'].append(('cap', cap))
+        elif is_sep(naked_line):
+            stonks['cap_sep'].append(('sep', ''))
+
         for idx, emj in enumerate([':stonks: ', ':badstonks: ']):
             if (naked_line.startswith(emj) and
                     naked_line.replace(emj, '', 1).strip()):
@@ -61,6 +72,16 @@ def make_stonks(stonks: dict, emojis={}, font='./res/fonts/NotoSans-Regular.ttf'
     if stonks['flip']:
         emoji = emoji.transpose(method=Image.FLIP_LEFT_RIGHT)
 
+    panels = []
+    # start making captions and seps
+    for line in stonks['cap_sep']:
+        if line[0] == 'cap':
+            panels.append(
+                make_caption(text=line[1], emojis=emojis, instance=instance,
+                             width=825, font=font))
+        elif line[0] == 'sep':
+            panels.append(make_sep(width=825))
+
     stonks_template.paste(emoji, box=HEAD,
                           mask=emoji if 'A' in emoji.getbands() else None)
     stonks_template.paste(mememan, box=BODY, mask=mememan)
@@ -70,8 +91,10 @@ def make_stonks(stonks: dict, emojis={}, font='./res/fonts/NotoSans-Regular.ttf'
                          color=WHITE, stroke=BLACK, emojis=emojis, instance=instance)
         stonks_template.paste(text, box=TEXT, mask=text)
 
-    stonks_template.save('./output/' + saveto)
-    return stonks_template
+    panels.append(stonks_template)
+    meme = vertically_stack(panels)
+    meme.save('./output/' + saveto)
+    return meme
 
 
 if __name__ == '__main__':
