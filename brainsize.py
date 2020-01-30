@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 from caption import parse_caption, make_caption
 from separator import is_sep, make_sep
 from textops import make_text
-from imageops import vertically_stack
+from imageops import stack
 from re import match
 
 BLACK = (0, 0, 0, 255)

@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw
 from caption import parse_caption, make_caption
 from separator import is_sep, make_sep
-from imageops import vertically_stack
+from imageops import stack
 from emojiops import is_in_emoji_form, get_emoji
 from textops import make_text
 from args import parse_arguments

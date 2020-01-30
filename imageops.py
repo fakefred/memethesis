@@ -3,7 +3,7 @@ from PIL import Image
 WHITE = (255, 255, 255, 255)
 
 
-def vertically_stack(images: list, mode='RGB', color=WHITE):
+def stack(images: list, mode='RGB', color=WHITE):
     w = max([im.size[0] for im in images])  # width of widest image
     h = sum([im.size[1] for im in images])  # sum of images' height
 
