@@ -2,6 +2,7 @@ from re import sub, match
 from drake import parse_drake, make_drake
 from brainsize import parse_brainsize, make_brainsize
 from stonks import parse_stonks, make_stonks
+from woman_yelling import parse_woman_yelling, make_woman_yelling
 from emojiops import construct_emoji_dict
 from fontconfig import LANGS, MONO
 from args import parse_arguments
@@ -70,6 +71,16 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
             'saveto': saveto
         })
 
+    woman_yelling = parse_woman_yelling(blessed)
+    if woman_yelling:
+        # is woman yelling meme
+        return ('Woman Yelling', {
+            'entities': woman_yelling,
+            'emojis': emojis,
+            'font': font,
+            'instance': instance,
+            'saveto': saveto
+        })
     # NOTE TO SELF: do not forget to add proxy to def memethesis()
     # when adding a new meme type
     return ('not a meme', None)
@@ -84,6 +95,8 @@ def memethesis(fmt: str, info: dict):
         meme = make_brainsize(**info)
     elif fmt == 'Stonks':
         meme = make_stonks(**info)
+    elif fmt == 'Woman Yelling':
+        meme = make_woman_yelling(**info)
 
     return meme
 

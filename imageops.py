@@ -15,3 +15,17 @@ def stack(images: list, mode='RGB', color=WHITE):
         y += im.size[1]
 
     return stacked
+
+
+def lay(images: list, mode='RGB', color=WHITE):
+    w = sum([im.size[0] for im in images])
+    h = max([im.size[1] for im in images])
+
+    laid = Image.new(mode, (w, h), color=color)
+
+    x = 0
+    for im in images:
+        laid.paste(im, box=(x, 0))
+        x += im.size[0]
+
+    return laid

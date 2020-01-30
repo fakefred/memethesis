@@ -68,14 +68,14 @@ def wrap_text(text: str, maxwidth: int, font) -> str:
 
 def make_text(text: str, box=(0, 0), font_path='', init_font_size=76,
               color=(0, 0, 0, 255), stroke=None,  # stroke can be a color tuple
-              emojis={}, instance=''):
+              align='left', emojis={}, instance=''):
     if contains_emojis(text, emojis):
         # fancy rendering enabled
         # redirect to fit_text_with_emojis_in_box()
         return make_emoji_text(
             text, emojis=emojis, instance=instance,
             box=box, font_path=font_path, color=color,
-            stroke=stroke)
+            stroke=stroke, align=align)
 
     canvas = Image.new('RGBA', box, color=(255, 255, 255, 0))
     draw = Draw(canvas)
@@ -97,18 +97,19 @@ def make_text(text: str, box=(0, 0), font_path='', init_font_size=76,
         # when wrapped text fits in box, loop will exit, and font is remembered
 
     draw.multiline_text((0, 0), wrapped, fill=color, font=font, stroke_fill=stroke,
-                        stroke_width=(2 if stroke is not None else 0))
+                        stroke_width=(2 if stroke is not None else 0), align=align)
     return canvas
 
 
 def make_emoji_text(text: str, emojis={}, instance='',
-                    box=(0, 0), init_font_size=76,
+                    box=(0, 0), init_font_size=76, align='left',
                     font_path='', color=(0, 0, 0, 255), stroke=None):
     # different method
     # used for text with custom emojis
     # less efficient than without
     # TODO: flag for no-render-emoji
     # split text into individual words, then draw them sequentially.
+    # NOTE: arg `align` is NYI, probably impossible
     words = advanced_split(text)
     canvas = Image.new('RGBA', box, color=(255, 255, 255, 0))  # method scope
 
