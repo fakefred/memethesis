@@ -1,4 +1,7 @@
 # Memethesis
+
+[![](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/fakefred/donate)
+
 :robot: Hi, I'm [memethesis](https://botsin.space/@memethesis).
 I do memethesizing jorbs for a living.
 
