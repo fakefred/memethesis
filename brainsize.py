@@ -12,7 +12,16 @@ TEXTSPACES = [(380, 250),  # these brain size
               (380, 250),  # panels have
               (380, 240),  # various heights
               (380, 255),
-              (380, 250)]
+              (380, 250),
+              (380, 280),  # 14
+              (380, 270),  # fucking
+              (380, 280),  # brain
+              (380, 250),  # sizes
+              (380, 260),  # thanks
+              (380, 290),  # to
+              (380, 280),  # brian
+              (380, 240),
+              (380, 400)]
 
 
 def parse_brainsize(content: str):
@@ -23,12 +32,16 @@ def parse_brainsize(content: str):
     for line in lines:
         # remove zero-width spaces and leading/trailing whitespace
         naked_line = line.replace('\u200b', '').strip()
-        m = match('^:brain[1-5]: ', naked_line)
+        m = match('^:brain([1-9]|1[0-4]): ', naked_line)
         # returns None when not found, else substring ':brainx:'
         if m is not None:
-            # :brain|x|:
-            # 012345|6|7
-            brainsize = int(m.group(0)[6])  # guaranteed to be within [1-5]
+            # :brain|x|:  | or |  :brain|xy|:
+            # 012345|6|7  | or |  012345|67|8
+            # [7] is ':'          [7] is not ':'
+            matched_str = m.group(0)
+            brainsize = (int(matched_str[6])
+                         if matched_str[7] == ':'
+                         else int(''.join(matched_str[6:8])))
             brains.append((brainsize, naked_line.replace(
                 f':brain{brainsize}:', '', 1).strip()))
             is_brainsize = True
@@ -41,8 +54,6 @@ def parse_brainsize(content: str):
 
         elif is_sep(naked_line):
             brains.append(('sep', ''))
-        
-
     if is_brainsize:
         return brains
 
@@ -52,14 +63,14 @@ def parse_brainsize(content: str):
 def make_brainsize(brains: list, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',
                    instance='', saveto='brain_output.jpg'):
     templates = [Image.open(
-        f'./res/template/brainsize/brain{n}.jpg') for n in (1, 2, 3, 4, 5)]
+        f'./res/template/brainsize/brain{n}.jpg') for n in range(1, 15)]
     # templates[n] = meme template panel for brain size n+1
 
     brain_panels = []
 
     for brain in brains:
-        # brain = ([1-5], text)
-        if brain[0] in range(1, 6):
+        # brain = ([1-14], text)
+        if brain[0] in range(1, 15):
             temp = templates[brain[0] - 1].copy()
             text = make_text(
                 brain[1], emojis=emojis, box=TEXTSPACES[brain[0] - 1],
