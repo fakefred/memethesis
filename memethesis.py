@@ -4,7 +4,7 @@ from brainsize import parse_brainsize, make_brainsize
 from stonks import parse_stonks, make_stonks
 from woman_yelling import parse_woman_yelling, make_woman_yelling
 from emojiops import construct_emoji_dict
-from fontconfig import LANGS, MONO
+from fontconfig import LANGS, MONO, FONTS
 from args import parse_arguments
 from html import unescape
 from htmlops import TootParser
@@ -30,12 +30,29 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
 
     arguments = parse_arguments(blessed)
 
+    # overall priority:
+    # font > mono > lang
+    # arguments here are filled with default values in args.py
+    # mono overrides lang (if mono is present, the elif will not be entered)
     if arguments['mono']:
         font = MONO
     elif arguments['lang'] in LANGS:
         font = LANGS[arguments['lang']]
     else:
         return ('language not supported', None)
+
+    stroke = False
+    if arguments['font'] in FONTS:
+        # font overrides mono and lang
+        font = FONTS[arguments['font']]
+        if arguments['font'] == 'impact':
+            stroke = True  # render text in its stroke (outline)
+    elif arguments['font'] == 'unchanged':
+        # default value in args.py
+        pass
+    else:
+        return ('font not supported', None)
+
 
     drakes = parse_drake(blessed)
     if drakes:
@@ -44,6 +61,7 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
             'drakes': drakes,
             'emojis': emojis,
             'font': font,
+            'stroke': stroke,
             'instance': instance,
             'saveto': saveto
         })  # return meme type and parsed info
@@ -56,6 +74,7 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
             'brains': brains,
             'emojis': emojis,
             'font': font,
+            'stroke': stroke,
             'instance': instance,
             'saveto': saveto
         })
@@ -67,6 +86,7 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
             'stonks': stonks,
             'emojis': emojis,
             'font': font,
+            'stroke': stroke,
             'instance': instance,
             'saveto': saveto
         })
@@ -78,6 +98,7 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
             'entities': woman_yelling,
             'emojis': emojis,
             'font': font,
+            'stroke': stroke,
             'instance': instance,
             'saveto': saveto
         })

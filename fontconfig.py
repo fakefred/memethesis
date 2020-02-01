@@ -29,4 +29,15 @@ LANGS = {}
 for lang, font in __langs__:
     LANGS[lang] = BASEPATH + font
 
+# monospace font path
 MONO = BASEPATH + 'NotoSansMono-Regular.ttf'
+
+# other customized fonts
+__fonts__ = [
+    ('impact', 'impact.ttf')
+]
+
+FONTS = {}
+
+for name, font in __fonts__:
+    FONTS[name] = BASEPATH + font

@@ -54,7 +54,7 @@ def parse_drake(content: str):
 
 
 def make_drake(drakes: list, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',
-               instance='', saveto='drake_output.jpg'):
+               instance='', saveto='drake_output.jpg', stroke=False):
     dislike_template = Image.open('./res/template/drake/drake_dislike.jpg')
     like_template = Image.open('./res/template/drake/drake_like.jpg')
 
@@ -67,7 +67,7 @@ def make_drake(drakes: list, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',
             temp = dislike_template.copy()
             text = make_text(
                 drake[1], emojis=emojis, box=TEXTSPACE, instance=instance,
-                font_path=font)
+                font_path=font, stroke=BLACK if stroke else None)
             temp.paste(text, box=(370, 12), mask=text)
             drake_panels.append(temp)
 
@@ -75,14 +75,15 @@ def make_drake(drakes: list, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',
             temp = like_template.copy()
             text = make_text(
                 drake[1], emojis=emojis, box=TEXTSPACE, instance=instance,
-                font_path=font)
+                font_path=font, stroke=BLACK if stroke else None)
             temp.paste(text, box=(370, 20), mask=text)
             drake_panels.append(temp)
 
         elif drake[0] == 'caption':
             drake_panels.append(
                 make_caption(text=drake[1], emojis=emojis,
-                             instance=instance, width=800, font=font)
+                             instance=instance, width=800, font=font,
+                             stroke=stroke)
             )
         
         elif drake[0] == 'sep':

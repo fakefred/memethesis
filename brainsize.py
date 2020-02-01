@@ -61,7 +61,7 @@ def parse_brainsize(content: str):
 
 
 def make_brainsize(brains: list, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',
-                   instance='', saveto='brain_output.jpg'):
+                   instance='', saveto='brain_output.jpg', stroke=False):
     templates = [Image.open(
         f'./res/template/brainsize/brain{n}.jpg') for n in range(1, 15)]
     # templates[n] = meme template panel for brain size n+1
@@ -74,13 +74,15 @@ def make_brainsize(brains: list, emojis={}, font='./res/fonts/NotoSans-Regular.t
             temp = templates[brain[0] - 1].copy()
             text = make_text(
                 brain[1], emojis=emojis, box=TEXTSPACES[brain[0] - 1],
-                instance=instance, font_path=font)
+                instance=instance, font_path=font,
+                stroke=BLACK if stroke else None)
             temp.paste(text, box=(10, 8), mask=text)
             brain_panels.append(temp)
         elif brain[0] == 'caption':
             brain_panels.append(
                 make_caption(text=brain[1], emojis=emojis,
-                             instance=instance, width=800, font=font)
+                             instance=instance, width=800, font=font,
+                             stroke=stroke)
             )
         elif brain[0] == 'sep':
             brain_panels.append(make_sep(width=800))

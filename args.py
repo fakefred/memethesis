@@ -6,7 +6,8 @@ def parse_arguments(toot: str):
     parsed = {
         'lang': 'en',
         'mono': False,
-        'flip': False
+        'flip': False,
+        'font': 'unchanged'
     }  # default
 
     for line in [l.strip().lower() for l in toot.splitlines()]:

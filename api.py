@@ -2,7 +2,7 @@ from mastodon import Mastodon, StreamListener
 from memethesis import prepare, memethesis
 from emojiops import construct_emoji_dict
 from config import *
-from fontconfig import LANGS
+from fontconfig import LANGS, FONTS
 from os import remove
 from datetime import datetime, timezone
 from threading import Timer
@@ -76,22 +76,38 @@ def handle_toot(status, trace=False, visibility='', reply_to=None) -> bool:
 
     if meme_type == 'not a meme':
         return False
+
     elif meme_type == 'language not supported':
         supported_languages = ', '.join(LANGS.keys())
         masto.status_reply(
             status,
-            f'Sorry, the language you specified is not yet supported. You can Delete and Redraft the post using one of these: {supported_languages}. Language requests are welcome.',
+            f'Sorry, the language you specified is not yet supported. \
+You can Delete and Redraft the post changing your language to one of these: \
+{supported_languages}.',
             visibility=determine_visibility(
                 status['visibility']) if not visibility else visibility
         )
         print(f'{time_string()}: Language not supported, status id {sid} by {acct}')
         return False
+
+    elif meme_type == 'font not supported':
+        supported_fonts = ', '.join(FONTS.keys())
+        masto.status_reply(
+            status,
+            f'Sorry, the language you specified is not yet supported. \
+You can Delete and Redraft the post changing your font to one of these: \
+{supported_fonts}.'
+        )
+        print(f'{time_string()}: Font not supported, status id {sid} by {acct}')
+        return False
+
     elif not meme_type == 'empty':
         if not within_limit(acct):
             # hit rate limit
             masto.status_reply(
                 status if reply_to is None else reply_to,
-                f'Sorry, you have triggered my rate limiting mechanism. This is not serious (at all). Please try again in at most {RATELIMIT_TIME} minutes.',
+                f'Sorry, you have triggered my rate limiting mechanism. \
+This is not serious (at all). Please try again in at most {RATELIMIT_TIME} minutes.',
                 visibility=(determine_visibility(status['visibility'])
                             if not visibility else visibility)
             )

@@ -52,7 +52,9 @@ def parse_stonks(content: str):
 
 
 def make_stonks(stonks: dict, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',
-                instance='', saveto='stonks_output.jpg'):
+                instance='', saveto='stonks_output.jpg', stroke=True):
+    # `stroke` is a dummy arg here. Whatever its value, stonks memes will always
+    # be generated in stroke.
     if stonks['bad'] and stonks['custom_text']:
         stonks_template = Image.open(
             './res/template/stonks/bg_stinks_notext.jpg')

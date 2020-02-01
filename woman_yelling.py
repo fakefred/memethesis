@@ -53,7 +53,7 @@ def parse_woman_yelling(content: str):
 
 
 def make_woman_yelling(entities: list, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',
-                       instance='', saveto='woman_yelling_output.jpg'):
+                       instance='', saveto='woman_yelling_output.jpg', stroke=False):
     '''
     Procedure:
     1. for each body panel (woman/cat), stack its text and image, and
@@ -72,7 +72,8 @@ def make_woman_yelling(entities: list, emojis={}, font='./res/fonts/NotoSans-Reg
             body_panels.append(stack([
                 make_caption(text=entity[1], emojis=emojis, instance=instance,
                              width=woman_template.size[0], height=TEXTSPACE[1],
-                             font=font, align='center'),  
+                             font=font, align='center', margin=20,
+                             stroke=stroke),
                 # the align='center' is disregarded by make_emoji_text
                 woman_template
             ]))
@@ -81,7 +82,8 @@ def make_woman_yelling(entities: list, emojis={}, font='./res/fonts/NotoSans-Reg
             body_panels.append(stack([
                 make_caption(text=entity[1], emojis=emojis, instance=instance,
                              width=cat_template.size[0], height=TEXTSPACE[1],
-                             font=font, margin=20),
+                             font=font, align='center', margin=20,
+                             stroke=stroke),
                 cat_template
             ]))
 
@@ -95,7 +97,8 @@ def make_woman_yelling(entities: list, emojis={}, font='./res/fonts/NotoSans-Reg
         if entity[0] == 'caption':
             cap_seps.append(
                 make_caption(text=entity[1], emojis=emojis,
-                             instance=instance, width=meme_width, font=font)
+                             instance=instance, width=meme_width, font=font,
+                             stroke=stroke)
             )
         elif entity[0] == 'sep':
             cap_seps.append(make_sep(width=meme_width))

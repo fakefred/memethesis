@@ -4,6 +4,8 @@ from PIL.ImageFont import truetype
 from emojiops import get_emoji_if_is, contains_emojis
 from re import sub, split
 
+WHITE = (255, 255, 255, 255)
+
 
 def is_CJK(char: str) -> bool:
     if len(char) == 1:
@@ -96,8 +98,10 @@ def make_text(text: str, box=(0, 0), font_path='', init_font_size=76,
         textsize = draw.multiline_textsize(wrapped, font=font)
         # when wrapped text fits in box, loop will exit, and font is remembered
 
-    draw.multiline_text((0, 0), wrapped, fill=color, font=font, stroke_fill=stroke,
-                        stroke_width=(2 if stroke is not None else 0), align=align)
+    draw.multiline_text((0, 0), wrapped, fill=color if stroke is None else WHITE,
+                        font=font, stroke_fill=stroke,
+                        stroke_width=(max(font_size // 20, 2)
+                                      if stroke is not None else 0), align=align)
     return canvas
 
 
@@ -166,8 +170,11 @@ def make_emoji_text(text: str, emojis={}, instance='',
                         canvas.paste(emoji, box=(x, y))
                 else:
                     draw.text((x, y - font_size // 10),
-                              word, fill=color, font=font, stroke_fill=stroke,
-                              stroke_width=(2 if stroke is not None else 0))
+                              word, fill=color if stroke is None else WHITE,
+                              font=font, stroke_fill=stroke,
+                              # stroke width: 2 is the bare minimum
+                              stroke_width=(max(font_size // 20, 2)
+                                            if stroke is not None else 0))
 
                 x += word_width + (space_width if not is_CJK(word) else 0)
 
