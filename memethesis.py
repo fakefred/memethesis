@@ -54,7 +54,7 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
         return ('font not supported', None)
 
 
-    drakes = parse_drake(blessed)
+    drakes, desc = parse_drake(blessed)
     if drakes:
         # is drake meme (or at least a portion thereof)
         return ('Drake', {
@@ -64,10 +64,10 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
             'stroke': stroke,
             'instance': instance,
             'saveto': saveto
-        })  # return meme type and parsed info
+        }, desc)  # return meme type and parsed info
 
     # uh oh, is not drake
-    brains = parse_brainsize(blessed)
+    brains, desc = parse_brainsize(blessed)
     if brains:
         # is brain size meme
         return ('Brain Size', {
@@ -77,9 +77,9 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
             'stroke': stroke,
             'instance': instance,
             'saveto': saveto
-        })
+        }, desc)
 
-    stonks = parse_stonks(blessed)
+    stonks, desc = parse_stonks(blessed)
     if stonks:
         # is stonks meme
         return ('Stonks', {
@@ -89,9 +89,9 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
             'stroke': stroke,
             'instance': instance,
             'saveto': saveto
-        })
+        }, desc)
 
-    woman_yelling = parse_woman_yelling(blessed)
+    woman_yelling, desc = parse_woman_yelling(blessed)
     if woman_yelling:
         # is woman yelling meme
         return ('Woman Yelling', {
@@ -101,7 +101,7 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
             'stroke': stroke,
             'instance': instance,
             'saveto': saveto
-        })
+        }, desc)
     # NOTE TO SELF: do not forget to add proxy to def memethesis()
     # when adding a new meme type
     return ('not a meme', None)

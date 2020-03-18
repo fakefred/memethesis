@@ -19,6 +19,8 @@ def parse_woman_yelling(content: str):
     entities = []  # tuples of (woman/cat, text)
     is_woman_yelling = False
 
+    description = '(Woman yelling meme) '
+
     for line in lines:
         # remove zero-width spaces and leading/trailing whitespace
         naked_line = line.replace('\u200b', '').strip()
@@ -28,6 +30,7 @@ def parse_woman_yelling(content: str):
                 'woman',
                 naked_line.replace(WOMAN, '', 1).strip()))
             is_woman_yelling = True
+            description += 'upset yelling woman: "{0}"; '.format(entities[-1][1])
 
         elif (naked_line.startswith(CAT) and
                 naked_line.replace(CAT, '', 1).strip()):
@@ -35,6 +38,7 @@ def parse_woman_yelling(content: str):
                 'cat',
                 naked_line.replace(CAT, '', 1).strip()))
             is_woman_yelling = True
+            description += 'confused cat sitting at a table: "{0}"; '.format(entities[-1][1])
 
         elif not is_woman_yelling and parse_caption(naked_line) is not None:
             # only allow captions and seps above woman and cat
@@ -42,14 +46,15 @@ def parse_woman_yelling(content: str):
                 'caption',
                 parse_caption(naked_line)
             ))
+            description += 'caption above meme: {0}; '.format(entities[-1][1])
 
         elif not is_woman_yelling and is_sep(naked_line):
             entities.append(('sep', ''))
 
     if is_woman_yelling:
-        return entities
+        return (entities, description[:-2])
 
-    return None
+    return (None, None)
 
 
 def make_woman_yelling(entities: list, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',

@@ -18,6 +18,8 @@ def parse_drake(content: str):
     drakes = []  # tuples of (dislike/like, text)
     is_drake = False
 
+    description = '(Drake meme) '
+
     for line in lines:
         # remove zero-width spaces and leading/trailing whitespace
         naked_line = line.replace('\u200b', '').strip()
@@ -29,6 +31,7 @@ def parse_drake(content: str):
                 'dislike',
                 # remove leftmost :drake_dislike:
                 naked_line.replace(':drake_dislike: ', '', 1).strip()))
+            description += 'dislikes "{0}"; '.format(drakes[-1][1])
             is_drake = True
 
         elif (naked_line.startswith(':drake_like: ') and
@@ -36,6 +39,7 @@ def parse_drake(content: str):
             drakes.append((
                 'like',
                 naked_line.replace(':drake_like: ', '', 1).strip()))
+            description += 'likes "{0}"; '.format(drakes[-1][1])
             is_drake = True
 
         elif parse_caption(naked_line) is not None:
@@ -43,14 +47,15 @@ def parse_drake(content: str):
                 'caption',
                 parse_caption(naked_line)
             ))
+            description += 'caption "{0}"; '.format(drakes[-1][1])
 
         elif is_sep(naked_line):
             drakes.append(('sep', ''))
 
     if is_drake:
-        return drakes
+        return (drakes, description[:-2])
 
-    return None
+    return (None, None)
 
 
 def make_drake(drakes: list, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',

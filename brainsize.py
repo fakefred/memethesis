@@ -29,6 +29,8 @@ def parse_brainsize(content: str):
     brains = []  # tuples of (dislike/like, text)
     is_brainsize = False
 
+    description = '(Brain size meme) '
+
     for line in lines:
         # remove zero-width spaces and leading/trailing whitespace
         naked_line = line.replace('\u200b', '').strip()
@@ -44,6 +46,7 @@ def parse_brainsize(content: str):
                          else int(''.join(matched_str[6:8])))
             brains.append((brainsize, naked_line.replace(
                 f':brain{brainsize}:', '', 1).strip()))
+            description += 'brain size {0}: "{1}"; '.format(str(brainsize), brains[-1][1])
             is_brainsize = True
 
         elif parse_caption(naked_line):
@@ -51,13 +54,14 @@ def parse_brainsize(content: str):
                 'caption',
                 parse_caption(naked_line)
             ))
+            description += 'caption "{0}"; '.format(brains[-1][1])
 
         elif is_sep(naked_line):
             brains.append(('sep', ''))
     if is_brainsize:
-        return brains
+        return (brains, description[:-2])
 
-    return None
+    return (None, None)
 
 
 def make_brainsize(brains: list, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',

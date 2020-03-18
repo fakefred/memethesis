@@ -26,7 +26,6 @@ def parse_stonks(content: str):
         'bad': False,
         'custom_text': ''
     }
-
     for line in lines:
         # remove zero-width spaces and leading/trailing whitespace
         naked_line = line.replace('\u200b', '').strip()
@@ -47,8 +46,8 @@ def parse_stonks(content: str):
                     if len(words) > 1:
                         # custom text present
                         stonks['custom_text'] = ' '.join(words[1:])
-                    return stonks
-    return None
+                    return (stonks, '')
+    return (None, None)
 
 
 def make_stonks(stonks: dict, emojis={}, font='./res/fonts/NotoSans-Regular.ttf',

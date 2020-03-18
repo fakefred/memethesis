@@ -67,7 +67,7 @@ def handle_toot(status, trace=False, visibility='', reply_to=None) -> bool:
     # @handle[@domain]; uniqueness guaranteed
     acct = status['account']['acct']
 
-    meme_type, info = prepare(
+    meme_type, info, desc = prepare(
         status['content'],
         emojis=construct_emoji_dict(status['emojis']),
         instance=status['url'],  # emojiops.py will handle this
@@ -117,7 +117,7 @@ This is not serious (at all). Please try again in at most {RATELIMIT_TIME} minut
         memethesis(meme_type, info)
         # upload meme
         media_id = masto.media_post(
-            'output/' + path, mime_type='image/jpeg')['id']
+            'output/' + path, mime_type='image/jpeg', description=desc)['id']
         # publish toot
         masto.status_reply(
             status if reply_to is None else reply_to,
