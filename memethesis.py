@@ -26,7 +26,7 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
     # else, return 'not a meme' and None.
     blessed = uncurse(toot)
     if not blessed.strip():
-        return ('empty', None)
+        return ('empty', None, None)
 
     arguments = parse_arguments(blessed)
 
@@ -39,7 +39,7 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
     elif arguments['lang'] in LANGS:
         font = LANGS[arguments['lang']]
     else:
-        return ('language not supported', None)
+        return ('language not supported', None, None)
 
     stroke = False
     if arguments['font'] in FONTS:
@@ -51,7 +51,7 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
         # default value in args.py
         pass
     else:
-        return ('font not supported', None)
+        return ('font not supported', None, None)
 
 
     drakes, desc = parse_drake(blessed)
@@ -104,7 +104,7 @@ def prepare(toot: str, emojis={}, instance='', saveto='') -> tuple:
         }, desc)
     # NOTE TO SELF: do not forget to add proxy to def memethesis()
     # when adding a new meme type
-    return ('not a meme', None)
+    return ('not a meme', None, None)
 
 
 def memethesis(fmt: str, info: dict):
